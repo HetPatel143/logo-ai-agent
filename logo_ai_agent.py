@@ -33,13 +33,13 @@ def validate_logo(logo_concept):
 # Function to generate logo image using DALL·E
 def generate_logo_image(prompt):
     response = client.images.generate(
-        model="dall-e-2",
         prompt=prompt,
-        size="512x512",
+        size="1024x1024",  # Bigger size is better
         n=1
     )
     image_url = response.data[0].url
     return image_url
+
 
 # Streamlit App UI
 st.title("\U0001F4BB AI Logo Generator")
