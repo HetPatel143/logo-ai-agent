@@ -1,11 +1,12 @@
-import openai
+# Import Libraries
+from openai import OpenAI
 import streamlit as st
 import random
 
 # Securely load OpenAI key from Streamlit secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-  # Replace with your real API key
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# Function to generate logo concept
 def generate_logo_concept(brand):
     icons = ['abstract shape', 'lettermark', 'emblem', 'symbolic animal', 'geometric figure']
     icon_choice = random.choice(icons)
@@ -18,7 +19,7 @@ def generate_logo_concept(brand):
     }
     return logo_concept
 
-
+# Function to validate logo
 def validate_logo(logo_concept):
     tests = {
         'Legibility Test': True,
@@ -29,28 +30,23 @@ def validate_logo(logo_concept):
     }
     return tests
 
-
+# Function to generate logo image using DALL·E
 def generate_logo_image(prompt):
-    from openai import OpenAI
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        n=1
+    )
+    image_url = response.data[0].url
+    return image_url
 
-client = OpenAI()
-
-response = client.images.generate(
-    model="dall-e-3",
-    prompt=prompt,
-    size="1024x1024",
-    quality="standard",
-    n=1
-)
-
-image_url = response.data[0].url
-return image_url
-    
-
-# Streamlit UI
+# Streamlit App UI
 st.title("\U0001F4BB AI Logo Generator")
 st.write("Fill the brand details below to generate a real logo.")
 
+# Input Form
 with st.form("brand_form"):
     sector = st.text_input("Sector (e.g., Tech, Sports, FMCG)")
     company_name = st.text_input("Company Name")
@@ -61,6 +57,7 @@ with st.form("brand_form"):
     typography = st.text_input("Typography Preference (Sans-serif, Handwritten)")
     submitted = st.form_submit_button("Generate Logo")
 
+# After Form Submission
 if submitted:
     brand_info = {
         'sector': sector,
@@ -85,7 +82,12 @@ if submitted:
 
     # Generate real logo image with DALL·E
     with st.spinner('Generating logo...'):
-        prompt = f"Logo for a {brand_info['sector']} brand named {brand_info['company_name']}, focusing on {', '.join(brand_info['brand_values'])}. Style: {logo['style']}, Typography: {logo['typography']}, Colors: {logo['primary_color']}, Icon: {logo['icon']}."
+        prompt = (
+            f"Logo for a {brand_info['sector']} brand named {brand_info['company_name']}, "
+            f"focusing on {', '.join(brand_info['brand_values'])}. "
+            f"Style: {logo['style']}, Typography: {logo['typography']}, "
+            f"Colors: {logo['primary_color']}, Icon: {logo['icon']}."
+        )
         logo_url = generate_logo_image(prompt)
         st.image(logo_url, caption="Generated Logo", use_column_width=True)
 
