@@ -45,8 +45,7 @@ response = client.images.generate(
 
 image_url = response.data[0].url
 return image_url
-    image_url = response['data'][0]['url']
-    return image_url
+    
 
 # Streamlit UI
 st.title("\U0001F4BB AI Logo Generator")
