@@ -2,7 +2,7 @@ import openai
 import streamlit as st
 
 # Securely load OpenAI key from Streamlit secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets[OPENAI_API_KEY]
   # Replace with your real API key
 
 def generate_logo_concept(brand):
