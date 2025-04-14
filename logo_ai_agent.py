@@ -1,5 +1,10 @@
 import streamlit as st
 import random
+import openai  # Added for DALL·E
+
+# Set your OpenAI API key here
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+  # Replace with your real API key
 
 def generate_logo_concept(brand):
     icons = ['abstract shape', 'lettermark', 'emblem', 'symbolic animal', 'geometric figure']
@@ -24,9 +29,19 @@ def validate_logo(logo_concept):
     }
     return tests
 
+
+def generate_logo_image(prompt):
+    response = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="512x512"
+    )
+    image_url = response['data'][0]['url']
+    return image_url
+
 # Streamlit UI
 st.title("\U0001F4BB AI Logo Generator")
-st.write("Fill the brand details below to generate a logo concept.")
+st.write("Fill the brand details below to generate a real logo.")
 
 with st.form("brand_form"):
     sector = st.text_input("Sector (e.g., Tech, Sports, FMCG)")
@@ -59,6 +74,12 @@ if submitted:
     st.write(f"**Typography Style:** {logo['typography']}")
     st.write(f"**Logo Style:** {logo['style']}")
     st.write(f"**Logo Icon:** {logo['icon']}")
+
+    # Generate real logo image with DALL·E
+    with st.spinner('Generating logo...'):
+        prompt = f"Logo for a {brand_info['sector']} brand named {brand_info['company_name']}, focusing on {', '.join(brand_info['brand_values'])}. Style: {logo['style']}, Typography: {logo['typography']}, Colors: {logo['primary_color']}, Icon: {logo['icon']}."
+        logo_url = generate_logo_image(prompt)
+        st.image(logo_url, caption="Generated Logo", use_column_width=True)
 
     st.subheader("\U0001F50D Validation Results")
     for test, result in validation.items():
