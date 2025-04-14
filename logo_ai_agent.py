@@ -1,8 +1,7 @@
+import openai
 import streamlit as st
-import random
-import openai  # Added for DALL·E
 
-# Set your OpenAI API key here
+# Securely load OpenAI key from Streamlit secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
   # Replace with your real API key
 
