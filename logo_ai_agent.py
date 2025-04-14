@@ -31,11 +31,20 @@ def validate_logo(logo_concept):
 
 
 def generate_logo_image(prompt):
-    response = openai.Image.create(
-        prompt=prompt,
-        n=1,
-        size="512x512"
-    )
+    from openai import OpenAI
+
+client = OpenAI()
+
+response = client.images.generate(
+    model="dall-e-3",
+    prompt=prompt,
+    size="1024x1024",
+    quality="standard",
+    n=1
+)
+
+image_url = response.data[0].url
+return image_url
     image_url = response['data'][0]['url']
     return image_url
 
