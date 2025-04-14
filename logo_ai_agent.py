@@ -33,14 +33,12 @@ def validate_logo(logo_concept):
 # Function to generate logo image using Replicate (Stable Diffusion)
 def generate_logo_image(prompt):
     output = replicate_client.run(
-        "stability-ai/stable-diffusion:db21e45cf0960be8827ef7f60aab871ed764ffc5e7ee1bb54c2ebd0e8534b021",
-        input={
-            "prompt": prompt,
-            "image_dimensions": "512x512"
-        }
+        "stability-ai/stable-diffusion",
+        input={"prompt": prompt}
     )
-    # Output is a list of URLs (pick the first one)
+    # The output is a list of URLs
     return output[0]
+
 
 # Streamlit App UI
 st.title("\U0001F4BB AI Logo Generator")
