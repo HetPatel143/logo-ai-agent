@@ -1,10 +1,10 @@
 # Import Libraries
-from openai import OpenAI
+import replicate
 import streamlit as st
 import random
 
-# Securely load OpenAI key from Streamlit secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Load Replicate API key securely
+replicate_client = replicate.Client(api_token=st.secrets["REPLICATE_API_TOKEN"])
 
 # Function to generate logo concept
 def generate_logo_concept(brand):
@@ -30,16 +30,17 @@ def validate_logo(logo_concept):
     }
     return tests
 
-# Function to generate logo image using DALL·E
+# Function to generate logo image using Replicate (Stable Diffusion)
 def generate_logo_image(prompt):
-    response = client.images.generate(
-        prompt=prompt,
-        size="1024x1024",  # Bigger size is better
-        n=1
+    output = replicate_client.run(
+        "stability-ai/stable-diffusion:db21e45cf0960be8827ef7f60aab871ed764ffc5e7ee1bb54c2ebd0e8534b021",
+        input={
+            "prompt": prompt,
+            "image_dimensions": "512x512"
+        }
     )
-    image_url = response.data[0].url
-    return image_url
-
+    # Output is a list of URLs (pick the first one)
+    return output[0]
 
 # Streamlit App UI
 st.title("\U0001F4BB AI Logo Generator")
@@ -79,7 +80,7 @@ if submitted:
     st.write(f"**Logo Style:** {logo['style']}")
     st.write(f"**Logo Icon:** {logo['icon']}")
 
-    # Generate real logo image with DALL·E
+    # Generate real logo image with Replicate (Stable Diffusion)
     with st.spinner('Generating logo...'):
         prompt = (
             f"Logo for a {brand_info['sector']} brand named {brand_info['company_name']}, "
